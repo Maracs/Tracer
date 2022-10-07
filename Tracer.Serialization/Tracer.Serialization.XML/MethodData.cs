@@ -7,42 +7,29 @@ namespace Serialization.XML;
 [XmlRoot(ElementName = "Method")]
 public class MethodData
 {
-    string _methodName;
-    string _className;
-    long _timeMs;
+
 
     [XmlAttribute(Form = XmlSchemaForm.Unqualified)]
-    public long TimeMs 
-    { 
-        get { return _timeMs; } 
-        set { _timeMs = value; }
-    }
+    public string TimeMs { get; set; } = "";
+
     [XmlAttribute(Form = XmlSchemaForm.Unqualified)]
-    public string MethodName
-    {
-        get { return _methodName; }			
-    }
+    public string MethodName { get; set; } = "";
+
     [XmlAttribute(Form = XmlSchemaForm.Unqualified)]
-    public string ClassName
-    {
-        get { return _className; }	
-    }
+    public string ClassName { get; set; } = "";
 
     public MethodData(string methodName, string className,long timeMs ){
-        _methodName = methodName;
+        MethodName = methodName;
 
-        _className = className;
+        ClassName = className;
 
-        _timeMs = timeMs;
+        TimeMs = $"{timeMs}ms";
 
     }
 
-    public override bool Equals( object? md )
+    public MethodData()
     {
-        if ( md == null ) return false;
-        var md1 = (MethodData)md;
-        return _methodName == md1._methodName &&
-               _className == md1._className;				   
+        
     }
 
 		

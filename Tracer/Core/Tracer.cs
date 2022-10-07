@@ -61,15 +61,15 @@ namespace Core
 
 		private void  AddToDictionary(int threadId, MethodData data)
 		{
-			List<MethodData> list;
-			if ( _tempMethodInfo.TryGetValue( threadId, out list ) )
+			List<MethodData> list=new List<MethodData>();;
+			if ( _tempMethodInfo.ContainsKey(threadId) )
 			{
+				list = _tempMethodInfo[threadId];
 				list.Add( data );
 				_tempMethodInfo[ threadId ] = list;
 			}
 			else
 			{
-				list = new List<MethodData>();
 				list.Add( data );
 				_tempMethodInfo.Add( threadId, list );
 			}					

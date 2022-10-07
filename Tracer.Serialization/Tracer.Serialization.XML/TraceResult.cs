@@ -1,4 +1,5 @@
 using System.Text;
+using System.Xml.Schema;
 using System.Xml.Serialization;
 
 namespace Serialization.XML;
@@ -7,7 +8,33 @@ namespace Serialization.XML;
 public class TraceResult
 {
  
-    IReadOnlyDictionary<int, List<MethodData>> _traceInfo;
+    [XmlElement("Dictionary")]
+    public List<KeyValuePair<int, List<MethodData>>> XMLDictionaryProxy
+    {
+        get
+        {
+            return new List<KeyValuePair<int, List<MethodData>>>(this.TraceInfo);
+        }
+        set
+        {
+            this.TraceInfo = new Dictionary<int, List<MethodData>>();
+            foreach (var pair in value)
+                this.TraceInfo[pair.Key] = pair.Value;
+        }
+    }
+
+    
+    
+    [XmlIgnore]
+    public Dictionary<int, List<MethodData>> TraceInfo { get; set; }=new();
+    
+   
+    
+    
+    
+    
+    
+    
     public TraceResult()
     {
         
@@ -38,28 +65,7 @@ public class TraceResult
         
         
 
-        _traceInfo = traceInfo;
+        TraceInfo = traceInfo;
     }
     
-    
-    
-    
-    
-
-    public override string ToString()
-    {
-        StringBuilder sb = new StringBuilder();
-        foreach(int key in _traceInfo.Keys){
-            sb.AppendLine( key.ToString() );
-            foreach ( MethodData value in _traceInfo[ key ] )
-            {
-                sb.Append( value.ClassName + " " );
-                sb.Append( value.MethodName + " " );
-                sb.Append( value.TimeMs + " " );
-            }
-
-        }
-        sb.AppendLine( "\n" );
-        return sb.ToString();
-    }
 }
