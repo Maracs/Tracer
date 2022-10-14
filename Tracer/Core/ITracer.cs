@@ -6,10 +6,10 @@ using System.Threading.Tasks;
 
 namespace Core
 {
-	internal interface ITracer
+	public interface ITracer
 	{
-		public void Start();
-		public void Stop();
-		public TraceResult Result();
+		public void StartTrace();
+		public void StopTrace();
+		public TraceResult GetTraceResult();
 	}
 }

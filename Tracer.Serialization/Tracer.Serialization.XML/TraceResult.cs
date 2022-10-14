@@ -1,71 +1,58 @@
 using System.Text;
 using System.Xml.Schema;
 using System.Xml.Serialization;
+using Core;
 
 namespace Serialization.XML;
 
-[XmlRoot(ElementName = "Root")]
-public class TraceResult
-{
- 
-    [XmlElement("Dictionary")]
-    public List<KeyValuePair<int, List<MethodData>>> XMLDictionaryProxy
+    [XmlRoot(ElementName = "Root")]
+    public class TraceResult
     {
-        get
-        {
-            return new List<KeyValuePair<int, List<MethodData>>>(this.TraceInfo);
-        }
-        set
-        {
-            this.TraceInfo = new Dictionary<int, List<MethodData>>();
-            foreach (var pair in value)
-                this.TraceInfo[pair.Key] = pair.Value;
-        }
-    }
 
-    
-    
-    [XmlIgnore]
-    public Dictionary<int, List<MethodData>> TraceInfo { get; set; }=new();
-    
-   
-    
-    
-    
-    
-    
-    
-    public TraceResult()
-    {
-        
-    }
-    
-   // Core.TraceResult traceResult
-    public TraceResult(  Core.TraceResult coreTraceInfo )
-    {
-       
-        
-        Dictionary<int, List<MethodData>> traceInfo = new Dictionary<int, List<MethodData>>();
-        
-        foreach (KeyValuePair<int, List<Core.MethodData>> valuePair in coreTraceInfo.TraceInfo)
+        [XmlElement("Dictionary")]
+        public List<KeyValuePair<int, ThreadInformation>> XMLDictionaryProxy
         {
-            
-            List<MethodData> methodsData = new List<MethodData>();
-            
-            foreach (var value in valuePair.Value)
+            get { return new List<KeyValuePair<int, ThreadInformation>>(this.TraceInfo); }
+            set
             {
-                MethodData methodData = new MethodData(value.MethodName,value.ClassName,value.TimeMs);
-                methodsData.Add(methodData);
+                this.TraceInfo = new Dictionary<int, ThreadInformation>();
+                foreach (var pair in value)
+                    this.TraceInfo[pair.Key] = pair.Value;
             }
-            
-            traceInfo.Add(valuePair.Key,methodsData);
-            
         }
-        
-        
-        
 
-        TraceInfo = traceInfo;
+
+
+        [XmlIgnore] public Dictionary<int, ThreadInformation> TraceInfo { get; set; } = new();
+
+
+
+
+        
+        public TraceResult()
+        {
+
+        }
+        public TraceResult(Core.TraceResult coreTraceInfo)
+        {
+
+
+            Dictionary<int, ThreadInformation> traceInfo = new Dictionary<int, ThreadInformation>();
+
+            foreach (KeyValuePair<int, Core.ThreadInformation> valuePair in coreTraceInfo.TraceInfo)
+            {
+
+                ThreadInformation methodData = new ThreadInformation(valuePair.Value);
+
+
+               
+
+                traceInfo.Add(valuePair.Key, methodData);
+
+            }
+
+            
+            TraceInfo = traceInfo;
+        }
+
     }
-    
-}

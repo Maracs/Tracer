@@ -9,42 +9,25 @@ namespace Core
 {
 	public class MethodData
 	{
-		string _methodName;
-		string _className;
-		long _timeMs;
+		
+		public List<MethodData> Methods { get; set; } = new List<MethodData>();
 
-		public long TimeMs 
-		{ 
-			get { return _timeMs; } 
-			set { _timeMs = value; }
-		}
+		
 
-		public string MethodName
-		{
-			get { return _methodName; }			
-		}
+		public long TimeMs { get; set; }
 
-		public string ClassName
-		{
-			get { return _className; }	
-		}
+		public string MethodName { get; set; }
 
-		public MethodData(string methodName, string className){
-			_methodName = methodName;
+		public string ClassName { get; set; }
 
-			_className = className;
-			
-		}
+		
 
 		public override bool Equals( object? md )
 		{
 			if ( md == null ) return false;
 			var md1 = (MethodData)md;
-			return _methodName == md1._methodName &&
-				   _className == md1._className;				   
+			return MethodName == md1.MethodName &&
+				   ClassName == md1.ClassName;				   
 		}
-
-		
-
 	}
 }

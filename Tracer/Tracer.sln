@@ -9,6 +9,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Core", "Core\Core.csproj", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Serialization.Abstraction", "Serialization.Abstraction\Serialization.Abstraction.csproj", "{6EC6DE36-38F3-44C1-96FD-5B989FF05B37}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test", "Test\Test.csproj", "{D98FF58B-E61B-417F-AB75-B70985241FCF}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{6EC6DE36-38F3-44C1-96FD-5B989FF05B37}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6EC6DE36-38F3-44C1-96FD-5B989FF05B37}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6EC6DE36-38F3-44C1-96FD-5B989FF05B37}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D98FF58B-E61B-417F-AB75-B70985241FCF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D98FF58B-E61B-417F-AB75-B70985241FCF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D98FF58B-E61B-417F-AB75-B70985241FCF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D98FF58B-E61B-417F-AB75-B70985241FCF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -1,97 +1,87 @@
-﻿using System;
-using System.Collections.Generic;
+﻿
+using System.Collections.Concurrent;
+
 using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+
 
 namespace Core
 {
 	public class Tracer : ITracer
 	{
-		private bool _isRunning = false;
-		private Dictionary<int, List<MethodData>>_tempMethodInfo = new();
+		
+        private class TrackedMethod
+        {
+            public Stopwatch Stopwatch;
+            public MethodData MethodInformation;
+        }
+
+
+        private Dictionary<int, ThreadInformation> _trace = new();
+		private ConcurrentDictionary<int, Stack<TrackedMethod>>_threads = new();
 		
 		
-		private Stopwatch _stopWatch;
-		private int _currentThreadId;
-		private MethodData _currentMethodData;
-		
+		 public void StartTrace()
+        {
+            var trackedMethod = new TrackedMethod {Stopwatch = new(), MethodInformation = new()};
 
-		public TraceResult Result()
-		{
-			if ( !_isRunning )
-			{
-				TraceResult traceResult = new( _tempMethodInfo );
-				return traceResult;
-			}
-			throw new Exception();
-		}
+            var stackFrame = new StackFrame(1);
+            trackedMethod.MethodInformation.MethodName = stackFrame.GetMethod()?.Name;
+            trackedMethod.MethodInformation.ClassName = stackFrame.GetMethod()?.ReflectedType?.Name;
 
-		
-		public void Start()
-		{
-			if ( _isRunning ) return;
+            var threadId = Thread.CurrentThread.ManagedThreadId;
+            if (!_threads.TryGetValue(threadId, out var trackedStack))
+            {
+                trackedStack = new Stack<TrackedMethod>();
+                trackedStack.Push(trackedMethod);
+                _threads.TryAdd(threadId, trackedStack);
+            }
+            else
+            {
+                if (trackedStack.Count != 0) 
+                    trackedStack.Peek().MethodInformation.Methods.Add(trackedMethod.MethodInformation);
+                _threads[threadId].Push(trackedMethod);
+            }
+            
+            trackedMethod.Stopwatch.Start();
+        }
 
-			_currentThreadId = Thread.CurrentThread.ManagedThreadId;
+        public void StopTrace()
+        {
+            var threadId = Thread.CurrentThread.ManagedThreadId;
+            var trackedMethod = _threads[threadId].Pop();
+            
+            trackedMethod.Stopwatch.Stop();
+            trackedMethod.MethodInformation.TimeMs = trackedMethod.Stopwatch.ElapsedMilliseconds;
+            
+            if (!_trace.TryGetValue(threadId, out var threadInformation))
+            {
+                _trace[threadId] = new ThreadInformation() {
+                        Id = threadId, 
+                        TimeMs = 0, 
+                        Methods = new List<MethodData>()
+                };
+            }
 
-			_currentMethodData = GetFrameInfo();
-			_isRunning = true;
-			_stopWatch = new Stopwatch();
-			_stopWatch.Start();
-		}
+            if (_threads[threadId].Count == 0)
+            {
+                _trace[threadId].Methods.Add(trackedMethod.MethodInformation);
+            }
 
-		public void Stop()
-		{
-			
-			if (! _isRunning) return;
-			_stopWatch.Stop();
-			
-			var checkMethodData = GetFrameInfo();
-			var threadId = Thread.CurrentThread.ManagedThreadId;
+           
+            
+            foreach (var method in _trace[threadId].Methods)
+            {
+                _trace[threadId].TimeMs = _trace[threadId].TimeMs+method.TimeMs;
+            }
+            
+        }
 
-			if ( !checkMethodData.Equals( _currentMethodData )/* || (threadId != _currentThreadId)*/) return;
+        public TraceResult GetTraceResult()
+        {
+            TraceResult result = new(_trace);
+            return result;
+        }
 
-			_currentMethodData.TimeMs = _stopWatch.ElapsedMilliseconds;
-
-			this.AddToDictionary( _currentThreadId, _currentMethodData );
-
-			_isRunning = false;
-		}
-
-		private void  AddToDictionary(int threadId, MethodData data)
-		{
-			List<MethodData> list=new List<MethodData>();;
-			if ( _tempMethodInfo.ContainsKey(threadId) )
-			{
-				list = _tempMethodInfo[threadId];
-				list.Add( data );
-				_tempMethodInfo[ threadId ] = list;
-			}
-			else
-			{
-				list.Add( data );
-				_tempMethodInfo.Add( threadId, list );
-			}					
-		}
-
-		private MethodData GetFrameInfo()
-		{
-			StackTrace stackTrace = new StackTrace();
-			var frame = stackTrace.GetFrame( 2 );
-			string methodName = frame.GetMethod().Name;
-			string className = frame.GetMethod().ReflectedType.Name;
-
-			return new MethodData( methodName, className);
-		}
-
-
-		//private (string, string) GetFrameInfo()
-		//{
-		//	StackTrace stackTrace = new StackTrace();
-		//	var frame = stackTrace.GetFrame( 1 );
-		//	return (frame.GetMethod().Name, frame.GetMethod().ReflectedType.Name);
-		//}
 
 		
 	}

@@ -19,18 +19,18 @@ namespace Example
 
         public void MyMethod()
         {
-            _tracer.Start();
+            _tracer.StartTrace();
             Sleep(100);
             _bar.InnerMethod();
             PrivateMethod();
-            _tracer.Stop();
+            _tracer.StopTrace();
         }
 
         private void PrivateMethod()
         {
-            _tracer.Start();
+            _tracer.StartTrace();
             Sleep(105);
-            _tracer.Stop();
+            _tracer.StopTrace();
         }
     }
 
@@ -45,9 +45,9 @@ namespace Example
 
         public void InnerMethod()
         {
-            _tracer.Start();
+            _tracer.StartTrace();
             Sleep(200);
-            _tracer.Stop();
+            _tracer.StopTrace();
         }
     }
 
@@ -61,7 +61,7 @@ namespace Example
             foo.MyMethod();
             foo.MyMethod();
             task.Wait();
-            var result = tracer.Result();
+            var result = tracer.GetTraceResult();
           
             var files = Directory.EnumerateFiles(".\\Tracer.Serialization", "*.dll");
             foreach (var file in files)
